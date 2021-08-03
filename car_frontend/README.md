@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 # xunluoche
 校园巡逻车代码
-=======
 # car_frontend
 
 ## Project setup
@@ -26,4 +24,3 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
->>>>>>> 8622fe8 (update)
