@@ -1,0 +1,1 @@
+scp -r C:/Users/dcs/Desktop/项目/校园巡逻小车/car_frontend/dist  root@47.106.21.200:/var/www/
