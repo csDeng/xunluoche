@@ -28,5 +28,17 @@ module.exports = {
         config.resolve.modules[0] = path.resolve(__dirname, 'node_modules');
         config.resolve.modules[1] = 'node_modules';  
     },
+    devServer: {
+        proxy:{
+          '/api': {
+            target: 'http://47.106.21.200:50004',
+            ws: true,
+            changeOrigin: true,
+            pathRewrite: {
+              '^/api':''
+            }
+          }
+        }
+      }
     
 }

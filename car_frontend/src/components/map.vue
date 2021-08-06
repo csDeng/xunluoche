@@ -22,39 +22,10 @@
 <script>
 require("echarts/extension/bmap/bmap");
 
-var data = [
-  { name: "巡逻小兵3", value: 1 },
-  { name: "巡逻小兵2", value: 1 },
-  { name: "巡逻小兵1", value: 1 },
-  { name: "巡逻王", value: 1 },
-];
+var data = [{ name: "巡逻小兵", value: 1 }];
 var geoCoordMap = {
-  巡逻王: [114.412388, 22.70967],
-  巡逻小兵1: [114.404016, 22.70807],
-  巡逻小兵2: [114.407789, 22.708603],
-  巡逻小兵3: [114.409011, 22.710304],
+  巡逻小兵: [114.412388, 22.70967],
 };
-
-var convertData = function (data) {
-  var res = [];
-  for (var i = 0; i < data.length; i++) {
-    var geoCoord = geoCoordMap[data[i].name];
-    if (geoCoord) {
-      res.push({
-        name: data[i].name,
-        value: geoCoord.concat(data[i].value),
-      });
-    }
-  }
-  return res;
-};
-
-
-// 主要代码
-
-
-
-
 
 export default {
   name: "Map",
@@ -64,11 +35,6 @@ export default {
       chartsInstance: null,
       option: {},
     };
-  },
-  watch: {
-    theme: function () {
-      this.getData();
-    },
   },
   methods: {
     //   初始化echartsInstance对象
@@ -80,9 +46,24 @@ export default {
       this.getData();
     },
 
+    convertData() {
+      // console.log("数据转换", data, geoCoordMap);
+      var res = [];
+      for (var i = 0; i < data.length; i++) {
+        var geoCoord = geoCoordMap[data[i].name];
+        if (geoCoord) {
+          res.push({
+            name: data[i].name,
+            value: geoCoord.concat(data[i].value),
+          });
+        }
+      }
+      return res;
+    },
+
     // 获取数据
     async getData() {
-      (this.option = {
+      this.option = {
         title: {
           // 标题
           text: "巡逻小车位置",
@@ -106,7 +87,6 @@ export default {
             name: "小车数量",
             type: "effectScatter",
             coordinateSystem: "bmap",
-            data: convertData(data),
             symbolSize: 18,
             encode: {
               value: 2,
@@ -128,14 +108,16 @@ export default {
             zlevel: 1,
           },
         ],
-      }),
-        this.updateData();
+      };
+      this.option.series[0].data = this.convertData()
+      // console.log('------\r\n',this.option.series[0].data)
+      this.updateData()
     },
 
     // 更新图表
     updateData() {
+      // console.log("this.option\r\n", this.option);
       this.chartsInstance.setOption(this.option);
-      console.log("ok");
     },
 
     gotoHistory() {
@@ -143,13 +125,40 @@ export default {
       this.$router.push("/History");
     },
 
+    initws() {
+      console.log("init ws");
+      try {
+        this.$ws = new WebSocket("ws://192.168.43.92:3000");
+      } catch (error) {
+        console.log("链接失败");
+      }
 
+      this.$ws.onopen = () => {
+        console.log("websocket is connection\r\n", this.$ws);
+      };
+      this.$ws.onmessage = (e) => {
+        console.log("message被触发", e.data);
+        const d = JSON.parse(e.data).data;
+        data = d.data;
+        geoCoordMap = d.geoCoordMap;
+        this.getData();
+      };
+
+      this.$ws.onclose = (e) => {
+        console.log("websocket is closed\r\n", e);
+      };
+
+      this.$ws.onerror = (e) => {
+        console.log("websocket is error\r\n", e);
+      };
+    },
   },
   async mounted() {
-    this.initCharts();
-    setTimeout(() => {
-      this.$refs.alerm.style.display = "block";
-    }, 60000);
+    await this.initCharts();
+    this.initws();
+    // setTimeout(() => {
+    //   this.$refs.alerm.style.display = "block";
+    // }, 60000);
   },
 };
 </script>
@@ -194,5 +203,4 @@ export default {
   width: 100%;
   height: 100%;
 }
-
 </style>

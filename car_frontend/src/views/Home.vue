@@ -7,7 +7,7 @@
 
 <script>
 import Map from '@/map'
-import Time from '@/Time'
+// import Time from '@/Time'
 export default {
   data(){
     return {
@@ -16,7 +16,7 @@ export default {
   },
   components:{
     Map,
-    Time
+    // Time
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-<div id="main" @mouseenter="Mymouse" @mouseleave="myLeave">
+<div id="main" >
   <img id='image'   src='../images/hero-banner.png'/>
  
   <a-form
@@ -71,33 +71,57 @@
 <script>
 export default {
   name:'Login',
+  data(){
+    return {
+    }
+  },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'normal_login' });
+    // console.log("form=",this.form)
+  },
+  async mounted(){
+    const name = await window.localStorage.getItem('name')
+    const pwd = await window.localStorage.getItem('password')
+    console.log(name,pwd)
+    if(name){
+      this.form.setFieldsValue({'userName':name})
+    }
+    if(pwd){
+      this.form.setFieldsValue({'password':pwd})
+    }
   },
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-      this.form.validateFields((err, values) => {
+      if(!this.form){
+        return ;
+      }
+      this.form.validateFields( async(err, values) => {
         if (!err) {
           console.log('Received values of form: ', values);
-          this.$router.push('/Home')
-          this.pause()
+          const { userName: name, password: pwd} = values
+          if(values.remember){
+            window.localStorage.setItem('name',name)
+            window.localStorage.setItem('password',pwd)
+          }
+          const res = await this.$axios({
+            url:'/User/Login',
+            method:'POST',
+            data:{
+              name,
+              pwd
+            }
+          })
+          console.log(res)
+          const {StatusCode, Info } = res.data
+          if(StatusCode === 200){
+            this.$message.success(Info).then(()=>{
+              this.$router.push('/Home')
+            })
+          }
         }
       });
     },
-    pause(){
-      document.getElementById('image').style['animationPlayState'] = 'paused'
-    },
-    Mymouse(){
-      this.pause()
-    },
-    myLeave(){
-      document.getElementById('image').style['animationPlayState'] = 'running'
-    }
-  },
-  destroyed: function(){
-    console.log('摧毁')
-    document.getElementById('image').style['animationPlayState'] = 'paused'
   }
 };
 </script>

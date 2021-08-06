@@ -8,21 +8,39 @@
         :wrapper-col="{ span: 18 }"
         @submit="handleSubmit"
       >
-        <a-form-item label="名字">
+        <a-form-item label="设备名称:">
           <a-input
-            placeholder="请输入小车设备名字"
+            placeholder="请输入小车设备名称"
             v-decorator="[
-              'name',
-              { rules: [{ required: true, message: '请输入小车设备名字!' }] },
+              'DeviceName',
+              { rules: [{ required: true, message: '请输入小车设备名称!' }] },
             ]"
           />
         </a-form-item>
-        <a-form-item label="地点">
+        <a-form-item label="设备id:">
           <a-input
-            placeholder="请输入小车巡逻线路"
+            placeholder="请输入设备的id"
             v-decorator="[
-              'address',
-              { rules: [{ required: true, message: '请输入小车巡逻线路!' }] },
+              'DeviceId',
+              { rules: [{ required: true, message: '请输入设备的id!' }] },
+            ]"
+          />
+        </a-form-item>
+        <a-form-item label="设备ip:">
+          <a-input
+            placeholder="请输入设备的ip地址"
+            v-decorator="[
+              'Ip',
+              { rules: [{ required: true, message: '请输入设备的ip地址!' }] },
+            ]"
+          />
+        </a-form-item>
+        <a-form-item label="设备端口">
+          <a-input
+            placeholder="请输入设备的端口"
+            v-decorator="[
+              'Port',
+              { rules: [{ required: true, message: '请输入设备的端口!' }] },
             ]"
           />
         </a-form-item>
@@ -32,17 +50,11 @@
       </a-form>
 
       <a-table bordered :data-source="dataSource" :columns="columns">
-        <template slot="name" slot-scope="text, record">
-          <editable-cell
-            :text="text"
-            @change="onCellChange(record.key, 'name', $event)"
-          />
-        </template>
         <template slot="operation" slot-scope="text, record">
           <a-popconfirm
             v-if="dataSource.length"
             title="确认删除吗?"
-            @confirm="() => onDelete(record.key)"
+            @confirm="() => onDelete(record)"
           >
             <a href="javascript:;">删除</a>
           </a-popconfirm>
@@ -53,100 +65,61 @@
 </template>
 
 <script>
-import EditableCell from '@/EditableCell';
-
-
+import columns from "./columns";
 
 export default {
-  components:{
-    EditableCell,
+  components: {
   },
   data() {
     return {
       form: this.$form.createForm(this, { name: "coordinated" }),
-      dataSource: [
-        {
-          key: '1',
-          name: '巡逻王',
-          id: '1',
-          address: '北区宿舍',
-        },
-        {
-          key: '2',
-          name: '巡逻小兵1',
-          id: '2',
-          address: '教学楼',
-        },
-        {
-          key: '3',
-          name: '巡逻小兵2',
-          id: '3',
-          address: '竹韵花园',
-        },
-        {
-          key: '4',
-          name: '巡逻小兵3',
-          id: '4',
-          address: '马鞍岭',
-        },
-      ],
-      count: 4,
-      columns: [
-        {
-          title: '设备id',
-          dataIndex: 'id',
-        },
-        {
-          title: '设备名字',
-          dataIndex: 'name',
-          width: '30%',
-          scopedSlots: { customRender: 'name' },
-        },
-        {
-          title: '巡逻地点',
-          dataIndex: 'address',
-        },
-        {
-          title: '操作',
-          dataIndex: 'operation',
-          scopedSlots: { customRender: 'operation' },
-        },
-      ],
+      dataSource: [],
+      columns,
     };
   },
+  async mounted() {
+    this.get();
+  },
   methods: {
-    handleSubmit(e) {
+    async get() {
+      const res = await this.$axios.get("/HomePage/BindDevice");
+      // console.log("res=", res);
+      const { StatusCode, Info } = res.data;
+      if (StatusCode === 404) {
+        this.dataSource = [];
+        return this.$message.error(Info);
+      }
+      this.dataSource = Info;
+    },
+    async handleSubmit(e) {
       e.preventDefault();
-      this.form.validateFields((err, values) => {
+      this.form.validateFields(async (err, values) => {
         if (!err) {
-          console.log("Received values of form: ", values);
-          const { name, address } = values
-          const { count, dataSource } = this;
-          const newData = {
-            key: count,
-            id: count,
-            name,
-            address,
-          };
-          this.dataSource = [...dataSource, newData];
-          this.count = count + 1;
-          this.$message.success("添加成功")
+          const res = await this.$axios.post("/HomePage/BindDevice", values);
+          // console.log(res);
+          const { StatusCode, Info } = res.data;
+          if (StatusCode === 200) {
+            this.$message.success(Info);
+            this.get()
+          }
+          else{
+            this.$message.info(Info)
+          }
         }
       });
-      
     },
-     onCellChange(key, dataIndex, value) {
-      const dataSource = [...this.dataSource];
-      const target = dataSource.find(item => item.key === key);
-      if (target) {
-        target[dataIndex] = value;
-        this.dataSource = dataSource;
+    async onDelete(key) {
+      const res = await this.$axios.post('/HomePage/DeleteDevice',{did: key.DeviceId})
+      // console.log(res)
+      const { StatusCode, Info} = res.data
+      if(StatusCode===200){
+        this.$message.success(Info)
+        this.get()
+      }
+      else{
+        this.$message.info(Info)
       }
     },
-    onDelete(key) {
-      const dataSource = [...this.dataSource];
-      this.dataSource = dataSource.filter(item => item.key !== key);
-    }
   },
 };
 </script>

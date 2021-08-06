@@ -149,10 +149,10 @@ methods:{
     radar: {
         // shape: 'circle',
         indicator: [
-            { name: 'NH2', max: 6500},
-            { name: 'N2', max: 16000},
-            { name: 'O2', max: 30000},
-            { name: 'CO2', max: 38000},
+            { name: 'NH2', max: 100},
+            { name: 'N2', max: 100},
+            { name: 'O2', max: 100},
+            { name: 'CO2', max: 100},
         ]
     },
     series: [{
@@ -160,10 +160,7 @@ methods:{
         type: 'radar',
         data: [
             {
-                value: [4200, 3000, 20000, 35000],
-            },
-            {
-                value: [5000, 14000, 28000, 26000],
+                value: [90, 80, 40, 30],
             }
         ]
     }]

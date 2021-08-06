@@ -10,18 +10,59 @@ export default {
   components: {},
   data() {
     return {
-      url:'http://192.168.1.12/flv/live/test',
+      url:'http://183.239.241.108:50099/flv/test2.flv',
       player: {},
-      idx: null
+      idx: null,
+      $ws:null,
+      msg: 'Z'
     };
   },
-  created() { },
+  created() { 
+    this.initws()
+  },
 
   mounted(){
     this.play()
-    
+    document.onkeydown = (e)=>{
+      const code = e.key
+      switch(code){
+        case 'w' : this.msg='A'; break;
+        case 's' : this.msg='E'; break;
+        case 'a' : this.msg='H'; break;
+        case 'd' : this.msg='B'; break;
+        default :  this.msg='Z';
+      }
+     if(this.$ws) {
+        console.log('我要发送',this.msg)
+        this.$ws.send(this.msg);
+      }
+    }
   },
   methods: {
+    initws() {
+      console.log("init ws");
+      try {
+        this.$ws = new WebSocket("ws://192.168.43.92:3000");
+      } catch (error) {
+        console.log("链接失败");
+      }
+
+      this.$ws.onopen = () => {
+        console.log("websocket is connection\r\n", this.$ws);
+      };
+      this.$ws.onmessage = (e) => {
+        console.log("message被触发", e.data);
+      };
+
+      this.$ws.onclose = (e) => {
+        console.log("websocket is closed\r\n", e);
+      };
+
+      this.$ws.onerror = (e) => {
+        console.log("websocket is error\r\n", e);
+      };
+    },
+
     refreshUrl() { 
       //更新推流地址 
       this.player.src({ src:this.url })
@@ -48,14 +89,14 @@ export default {
           this.player.attachMediaElement(video); 
           this.player.load(); //加载 
           this.player.play(); //监听网络及视频流错误 
-          // this.player.on(flvjs.Events.ERROR, 
-          //   (errType, errDetail) => { 
-          //     this.reloadVideo(this.player); 
-          //     console.log(errType, errDetail)
-          //   }); 
-          // this.player.on(flvjs.Events.MEDIA_SOURCE_CLOSE, () =>{ 
-          //   this.reloadVideo(this.player); 
-          // }); 
+          this.player.on(flvjs.Events.ERROR, 
+            (errType, errDetail) => { 
+              this.reloadVideo(this.player); 
+              console.log(errType, errDetail)
+            }); 
+          this.player.on(flvjs.Events.MEDIA_SOURCE_CLOSE, () =>{ 
+            this.reloadVideo(this.player); 
+          }); 
       } 
       // console.log("player",this.player)
     },

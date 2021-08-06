@@ -17,6 +17,8 @@ name:'App',
 components:{
   Menu
 },
+mounted(){
+}
 
 }
 </script>

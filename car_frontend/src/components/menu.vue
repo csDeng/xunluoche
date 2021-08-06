@@ -25,7 +25,7 @@
 <script>
 export default {
 created(){
-  console.log(this.$route.meta.showMenu)
+  // console.log(this.$route.meta.showMenu)
 }
 }
 </script>
