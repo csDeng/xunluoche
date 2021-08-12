@@ -2,13 +2,14 @@ export default [
     {
       title: '设备id',
       dataIndex: 'DeviceId',
+      
     },
     {
       title: '设备名称',
       dataIndex: 'DeviceName',
       width: '30%'
     },
-    {
+    { 
       title: '设备ip',
       dataIndex: 'Ip',
     },

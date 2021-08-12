@@ -128,12 +128,11 @@ export default {
 
     initws() {
       try {
-        this.$ws = io('http://127.0.0.1:3000')
+        this.$ws = io('http://47.106.21.200:3000')
       } catch (error) {
-        
+        this.$message.error('socket 链接失败 ')
       }
-      
-            // console.log(this.$ws)
+      // console.log(this.$ws)
       this.$ws.on('connect',()=>{
           console.log("成功链接服务端啦")
       })
@@ -141,14 +140,18 @@ export default {
           console.log("服务断开，尝试重新链接")
           this.$ws.connect()
       })
-      this.$ws.on('msg',(data)=>{
-          console.log('收到msg',data)
+      this.$ws.on('gps',(dat)=>{
+          console.log('收到gps',dat)
+          data = dat.data
+          geoCoordMap = dat.geoCoordMap
+          this.getData()
+
       })
     },
   },
   async mounted() {
     await this.initCharts();
-    // this.initws();
+    this.initws();
     // setTimeout(() => {
     //   this.$refs.alerm.style.display = "block";
     // }, 60000);

@@ -50,7 +50,7 @@
         </a-form-item>
       </a-form>
 
-      <a-table bordered :data-source="dataSource" :columns="columns">
+      <a-table bordered :data-source="dataSource" :columns="columns" rowKey="Ip">
         <template slot="operation" slot-scope="text, record">
           <a-popconfirm
             v-if="dataSource.length"

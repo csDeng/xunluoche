@@ -114,8 +114,8 @@ export default {
           })
           console.log(res)
           const {StatusCode, Info } = res.data
-          // const token = res.headers['allow_visit']
-          // await window.localStorage.setItem('token',token)
+          const token = res.headers['allow_visit']
+          await window.localStorage.setItem('token',token)
           if(StatusCode === 200){
             this.$message.success(Info).then(()=>{
               this.$router.push('/Home')
