@@ -25,7 +25,7 @@ components:{
 }
 }
 </script>
-Dashboard
+
 
 <style lang='less' scoped >
 #video{

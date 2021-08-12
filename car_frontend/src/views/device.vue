@@ -4,11 +4,11 @@
       <a-form
         :form="form"
         layout="inline"
-        :label-col="{ span: 6 }"
-        :wrapper-col="{ span: 18 }"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
         @submit="handleSubmit"
       >
-        <a-form-item label="设备名称:">
+        <a-form-item label="设备名称: ">
           <a-input
             placeholder="请输入小车设备名称"
             v-decorator="[
@@ -17,7 +17,8 @@
             ]"
           />
         </a-form-item>
-        <a-form-item label="设备id:">
+        
+        <a-form-item label="设备id: ">
           <a-input
             placeholder="请输入设备的id"
             v-decorator="[
@@ -26,21 +27,21 @@
             ]"
           />
         </a-form-item>
-        <a-form-item label="设备ip:">
-          <a-input
-            placeholder="请输入设备的ip地址"
-            v-decorator="[
-              'Ip',
-              { rules: [{ required: true, message: '请输入设备的ip地址!' }] },
-            ]"
-          />
-        </a-form-item>
-        <a-form-item label="设备端口">
+        <a-form-item label="设备端口: ">
           <a-input
             placeholder="请输入设备的端口"
             v-decorator="[
               'Port',
               { rules: [{ required: true, message: '请输入设备的端口!' }] },
+            ]"
+          />
+        </a-form-item>
+        <a-form-item label="设备ip: ">
+          <a-input
+            placeholder="请输入设备的ip地址"
+            v-decorator="[
+              'Ip',
+              { rules: [{ required: true, message: '请输入设备的ip地址!' }] },
             ]"
           />
         </a-form-item>

@@ -17,6 +17,9 @@
       <a-menu-item>
         <a href="javascript:;" v-show="$router.currentRoute.fullPath !== '/Device'" @click="e => $router.push('/Device')">设备管理</a>
       </a-menu-item>
+      <a-menu-item>
+        <a href="javascript:;" v-show="$router.currentRoute.fullPath !== '/Login'" @click="e => $router.push('/Login')">重新登陆</a>
+      </a-menu-item>
     </a-menu>
   </a-dropdown>
   </div>

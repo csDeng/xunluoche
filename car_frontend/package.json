@@ -17,6 +17,7 @@
     "less": "3",
     "less-loader": "7",
     "mpegts.js": "^1.6.7",
+    "postcss-px2rem-exclude": "^0.0.6",
     "style-resources-loader": "^1.4.1",
     "vue": "^2.6.11",
     "vue-router": "^3.5.1"

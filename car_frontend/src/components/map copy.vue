@@ -34,7 +34,6 @@ export default {
     return {
       chartsInstance: null,
       option: {},
-      $ws: null
     };
   },
   methods: {
@@ -127,28 +126,36 @@ export default {
     },
 
     initws() {
+      console.log("init ws");
       try {
-        this.$ws = io('http://127.0.0.1:3000')
+        this.$ws = new WebSocket("ws://192.168.43.92:3000");
       } catch (error) {
-        
+        console.log("链接失败");
       }
-      
-            // console.log(this.$ws)
-      this.$ws.on('connect',()=>{
-          console.log("成功链接服务端啦")
-      })
-      this.$ws.on('disconnect',()=>{
-          console.log("服务断开，尝试重新链接")
-          this.$ws.connect()
-      })
-      this.$ws.on('msg',(data)=>{
-          console.log('收到msg',data)
-      })
+
+      this.$ws.onopen = () => {
+        console.log("websocket is connection\r\n", this.$ws);
+      };
+      this.$ws.onmessage = (e) => {
+        console.log("message被触发", e.data);
+        const d = JSON.parse(e.data).data;
+        data = d.data;
+        geoCoordMap = d.geoCoordMap;
+        this.getData();
+      };
+
+      this.$ws.onclose = (e) => {
+        console.log("websocket is closed\r\n", e);
+      };
+
+      this.$ws.onerror = (e) => {
+        console.log("websocket is error\r\n", e);
+      };
     },
   },
   async mounted() {
     await this.initCharts();
-    // this.initws();
+    this.initws();
     // setTimeout(() => {
     //   this.$refs.alerm.style.display = "block";
     // }, 60000);

@@ -17,7 +17,8 @@ import {
     message,
     Divider,
     Select,
-    Tooltip
+    Tooltip,
+    Modal
 } from 'ant-design-vue';
 
 Vue.prototype.$message = message
@@ -39,4 +40,5 @@ Vue.use(Button)
     .use(Divider)
     .use(Select)
     .use(Tooltip)
+    .use(Modal)
 ;

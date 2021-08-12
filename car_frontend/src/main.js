@@ -13,9 +13,15 @@ Vue.prototype.$echarts = echarts
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 Vue.use(less)
+/** px2rem */
+// window.addEventListener("resize", function () {
+//   let w = window.innerWidth;
+//   if (w > 750) w = 750;
+//   document.documentElement.style.fontSize = w / 10 + "px";
+// });
 
 
-new Vue({
+export default new Vue({
   render: h => h(App),
   router
 }).$mount('#app')

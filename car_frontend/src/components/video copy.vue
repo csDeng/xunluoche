@@ -10,7 +10,7 @@ export default {
   components: {},
   data() {
     return {
-      url:'http://39.108.60.195:80/flv/test.flv',
+      url:'http://183.239.241.108:50099/flv/lab.flv',
       player: {},
       idx: null,
       $ws:null,
@@ -18,25 +18,25 @@ export default {
     };
   },
   created() { 
-    // this.initws()
+    this.initws()
   },
 
   mounted(){
     this.play()
-    // document.onkeydown = (e)=>{
-    //   const code = e.key
-    //   switch(code){
-    //     case 'w' : this.msg='A'; break;
-    //     case 's' : this.msg='E'; break;
-    //     case 'a' : this.msg='H'; break;
-    //     case 'd' : this.msg='B'; break;
-    //     default :  this.msg='Z';
-    //   }
-    //  if(this.$ws) {
-    //     console.log('我要发送',this.msg)
-    //     this.$ws.send(this.msg);
-    //   }
-    // }
+    document.onkeydown = (e)=>{
+      const code = e.key
+      switch(code){
+        case 'w' : this.msg='A'; break;
+        case 's' : this.msg='E'; break;
+        case 'a' : this.msg='H'; break;
+        case 'd' : this.msg='B'; break;
+        default :  this.msg='Z';
+      }
+     if(this.$ws) {
+        console.log('我要发送',this.msg)
+        this.$ws.send(this.msg);
+      }
+    }
   },
   methods: {
     initws() {
@@ -70,9 +70,9 @@ export default {
     },
     play() { 
       // console.log("1111111111111111111111")
-      // console.log("flv",flvjs)
+      console.log("flv",flvjs)
       var video = this.$refs.videoElement
-      // console.log("video",video)
+      console.log("video",video)
       if (  flvjs && flvjs.isSupported()) { 
         // console.log("this.player,",this.player)
         this.player = flvjs.createPlayer({ 
