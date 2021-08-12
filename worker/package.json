@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "ioredis": "^4.27.7",
+    "socket.io": "2"
+  },
+  "scripts": {
+    "start": "nodemon index.js"
+  }
+}
