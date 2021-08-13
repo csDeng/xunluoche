@@ -2,13 +2,12 @@
 <div id='video'>
   <a-row>
     <a-col :span='13'>
-      <my-video />
+      <my-video ref='video' />
     </a-col>
     <a-col :span='11'>
       <dashboard />
     </a-col>
   </a-row>
-
 
 </div>
   
@@ -33,5 +32,6 @@ components:{
   height: 100%;
   // background: #000;
 }
+
 
 </style>

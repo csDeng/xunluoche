@@ -113,8 +113,7 @@ export default {
             }
           })
           console.log(res)
-          const {StatusCode, Info } = res.data
-          const token = res.headers['allow_visit']
+          const {StatusCode, Info, token } = res.data
           await window.localStorage.setItem('token',token)
           if(StatusCode === 200){
             this.$message.success(Info).then(()=>{

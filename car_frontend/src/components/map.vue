@@ -145,7 +145,9 @@ export default {
           data = dat.data
           geoCoordMap = dat.geoCoordMap
           this.getData()
-
+      })
+      this.$ws.on('people',(e)=>{
+        
       })
     },
   },

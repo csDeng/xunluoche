@@ -2,7 +2,7 @@
 import axios from 'axios';
 import vm from '../main';
 const instance = axios.create({
-    baseURL:'/api',
+    baseURL:process.env.VUE_APP_API_ROOT,
     timeout: 5000,
     headers:{'Content-Type':'application/json; charset=utf-8'}
 })

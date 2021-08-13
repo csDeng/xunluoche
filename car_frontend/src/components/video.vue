@@ -12,9 +12,7 @@ export default {
     return {
       url:'http://39.108.60.195:80/flv/test.flv',
       player: {},
-      idx: null,
-      $ws:null,
-      msg: 'Z'
+      idx: null
     };
   },
   created() { 
@@ -23,46 +21,8 @@ export default {
 
   mounted(){
     this.play()
-    // document.onkeydown = (e)=>{
-    //   const code = e.key
-    //   switch(code){
-    //     case 'w' : this.msg='A'; break;
-    //     case 's' : this.msg='E'; break;
-    //     case 'a' : this.msg='H'; break;
-    //     case 'd' : this.msg='B'; break;
-    //     default :  this.msg='Z';
-    //   }
-    //  if(this.$ws) {
-    //     console.log('我要发送',this.msg)
-    //     this.$ws.send(this.msg);
-    //   }
-    // }
   },
   methods: {
-    initws() {
-      console.log("init ws");
-      try {
-        this.$ws = new WebSocket("ws://192.168.43.92:3000");
-      } catch (error) {
-        console.log("链接失败");
-      }
-
-      this.$ws.onopen = () => {
-        console.log("websocket is connection\r\n", this.$ws);
-      };
-      this.$ws.onmessage = (e) => {
-        console.log("message被触发", e.data);
-      };
-
-      this.$ws.onclose = (e) => {
-        console.log("websocket is closed\r\n", e);
-      };
-
-      this.$ws.onerror = (e) => {
-        console.log("websocket is error\r\n", e);
-      };
-    },
-
     refreshUrl() { 
       //更新推流地址 
       this.player.src({ src:this.url })

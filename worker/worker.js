@@ -11,12 +11,11 @@ redis.on('close',()=>{
     console.info('redis is closed')
 })
 
-console.log(parentPort.postMessage('hahha'))
+// console.log(parentPort.postMessage('hahha'))
 
 function getP(){
     redis.get('People').then(r=>{
-        console.log('p=\r\n',r)
-        if(r){
+        if(!r){
             getG(r)
         }
     },e=>{
@@ -25,7 +24,8 @@ function getP(){
 }
 function getG(person){
     redis.get('GPS').then(r=>{
-        self.postMessage({person,r})
+        console.log('g=\r\n',r)
+        parentPort.postMessage({person,r})
     },e=>{
         console.error(e)
     })
@@ -35,4 +35,4 @@ console.log(this)
 // 3s请求一次数据库
 setInterval(()=>{
     getP()
-}, 3000)
+}, 15000)
