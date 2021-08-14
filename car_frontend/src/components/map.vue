@@ -2,18 +2,25 @@
   <div id="page">
     <div class="main">
       <div ref="map" id="map"></div>
-      <p id="amount">当前在线车辆 4 / 4</p>
+      <p id="amount">当前在线车辆 1 / 1</p>
     </div>
     <div id="alerm" ref="alerm">
       <a-card title="警报">
-        <p>陌生人员闯入！！！</p>
+        <p>{{warning.Comment}}</p>
         <p>发现者： 巡逻王</p>
-        <p>位置信息：（宿舍E-2）经纬度 [114.401138, 22.707812]</p>
+        <p>位置信息：深圳技术大学C-1大数据与互联网学院楼 经纬度 [ {{warning.GPS[0]}}, {{warning.GPS[1]}}]</p>
+        <p>时间：{{warning.Time}}</p>
         <a-divider>图像信息</a-divider>
-        <img id="img" src="../images/car.jpg" title="危险图片" />
-        <button @click="gotoHistory" title="跳到历史信息查看详情">
-          查看详情
-        </button>
+        <img id="img" :src="imgbase+warning.Img" title="图片信息" />
+        <a-space>
+          <a-button type='primary' @click="gotoHistory" title="跳到历史信息查看详情">
+            查看详情
+         </a-button>
+         <a-divider type="vertical" />
+         <a-button @click='cancel'>收到关闭</a-button>
+        </a-space>
+
+        
       </a-card>
     </div>
   </div>
@@ -32,9 +39,17 @@ export default {
   components: {},
   data() {
     return {
+      imgbase:'data:image/png;base64,',
       chartsInstance: null,
       option: {},
-      $ws: null
+      $ws: null,
+      $ws1: null,
+      warning: {
+        Comment: null,
+        Time: null,
+        Img: null,
+        GPS:[0,0]
+      }
     };
   },
   methods: {
@@ -121,33 +136,50 @@ export default {
       this.chartsInstance.setOption(this.option);
     },
 
+    showWarning(){
+      this.$refs.alerm.style.display = "block";
+    },
+    cancel(){
+      this.$refs.alerm.style.display = "none";
+    },
     gotoHistory() {
       this.$refs.alerm.style.display = "none";
       this.$router.push("/History");
     },
 
-    initws() {
+    async initws() {
       try {
         this.$ws = io('http://47.106.21.200:3000')
+        this.$ws1 = io('http://47.106.21.200:5000')
       } catch (error) {
         this.$message.error('socket 链接失败 ')
+
       }
       // console.log(this.$ws)
       this.$ws.on('connect',()=>{
           console.log("成功链接服务端啦")
+          setInterval(()=>{
+            this.$ws.emit('connect1')
+            this.$ws1.emit('connect1')
+          },2000)
+          
       })
       this.$ws.on('disconnect',()=>{
           console.log("服务断开，尝试重新链接")
           this.$ws.connect()
       })
       this.$ws.on('gps',(dat)=>{
+          dat = JSON.parse(dat)
           console.log('收到gps',dat)
           data = dat.data
           geoCoordMap = dat.geoCoordMap
           this.getData()
       })
-      this.$ws.on('people',(e)=>{
-        
+      this.$ws1.on('warning',(e)=>{
+        const ed = JSON.parse(e)
+        console.log("收到的warning",ed)
+        this.warning = ed
+        this.showWarning()
       })
     },
   },

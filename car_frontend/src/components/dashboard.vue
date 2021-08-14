@@ -15,6 +15,9 @@
       <img src='../images/fangxiang/zuo.png' title='左'   @click='change(3)' id='zuo' class='myImg'/>
       <img src='../images/fangxiang/you.png' title='右'   @click='change(4)' id='you' class='myImg'/>
     </div>
+      <a-button id='btn' @click='auto'>
+        自动巡逻
+      </a-button>
   </div>
 </template>
 
@@ -50,12 +53,19 @@ mounted(){
       }
      if(this.$ws) {
         console.log('我要发送',this.msg)
-        this.$ws.send(this.msg);
+        this.$ws.emit('Control', this.msg)
       }
   }
   this.initCharts()
 },
 methods:{
+  auto(){
+    if(!this.$ws) {
+      return this.$message.info("请等待socket连接")
+    }
+    this.$ws.emit('auto')
+    this.$message.success('正在发送自动巡逻命令')
+  },
   initws() {
     try {
       this.$ws = io('http://47.106.21.200:3000')
@@ -70,14 +80,12 @@ methods:{
         console.log("服务断开，尝试重新链接")
         this.$ws.connect()
     })
-    this.$ws.on('gps',(dat)=>{
-        console.log('收到gps',dat)
-        data = dat.data
-        geoCoordMap = dat.geoCoordMap
-        this.getData()
-    })
-    this.$ws.on('people',(e)=>{
-      
+    this.$ws.on('sensor',e=>{
+      const d = JSON.parse(e)
+      console.log('sensor',d)
+      this.option3.radar.indicator = d.indicator
+      this.option3.series[0].data = d.data
+      this.charts3.setOption(this.option3)
     })
   },
   change(id) {
@@ -89,10 +97,10 @@ methods:{
         case 4 : this.msg='B'; break;
         default :  this.msg='Z';
       }
-    if(this.$ws) {
-      console.log('我要发送',this.msg)
-      this.$ws.send(this.msg);
-    }
+     if(this.$ws) {
+        console.log('我要发送',this.msg)
+        this.$ws.emit('Control', this.msg)
+      }
   },
   initCharts(){
     // console.log('dom=',this.$refs.pie)
@@ -157,7 +165,6 @@ methods:{
         ]
     },
     series: [{
-      
         type: 'radar',
         data: [
             {
@@ -198,6 +205,10 @@ beforeDestroy(){
 #card{
   width: 100%;
   height: 100%;
+}
+#btn{
+  position: absolute;
+  top:55vh;
 }
 
 #fangxiang{
