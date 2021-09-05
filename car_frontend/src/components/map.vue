@@ -149,7 +149,10 @@ export default {
 
     async initws() {
       try {
+        let io = io ? io : null ;
+        // eslint-disable-next-line no-undef
         this.$ws = io('http://47.106.21.200:3000')
+        // eslint-disable-next-line no-undef
         this.$ws1 = io('http://47.106.21.200:5000')
       } catch (error) {
         this.$message.error('socket 链接失败 ')

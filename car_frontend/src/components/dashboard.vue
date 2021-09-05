@@ -1,251 +1,300 @@
 <template>
-  <div class='main'>
-      <a-card title='信息栏'>
-        <div id="pieMap" ref='pie'></div>
-      </a-card>
-      <a-card id='card' title='气体检测'>
-          <div id="rank" ref='rank'></div>
-      </a-card>
-      <a-card title='地点信息'>
-    深圳技术大学北区宿舍
+  <div class="main">
+    <a-card title="信息栏">
+      <div id="pieMap" ref="pie"></div>
     </a-card>
-    <div id='fangxiang'>
-      <img src='../images/fangxiang/shang.png' title='上' @click='change(1)' id='shang' class='myImg' />
-      <img src='../images/fangxiang/xia.png' title='下'   @click='change(2)' id='xia' class='myImg'/>
-      <img src='../images/fangxiang/zuo.png' title='左'   @click='change(3)' id='zuo' class='myImg'/>
-      <img src='../images/fangxiang/you.png' title='右'   @click='change(4)' id='you' class='myImg'/>
+    <a-card id="card" title="气体检测">
+      <div id="rank" ref="rank"></div>
+    </a-card>
+    <a-card title="地点信息"> 深圳技术大学北区宿舍 </a-card>
+    <div id="fangxiang">
+      <img
+        src="../images/fangxiang/shang.png"
+        title="上"
+        @click="change(1)"
+        id="shang"
+        class="myImg"
+      />
+      <img
+        src="../images/fangxiang/xia.png"
+        title="下"
+        @click="change(2)"
+        id="xia"
+        class="myImg"
+      />
+      <img
+        src="../images/fangxiang/zuo.png"
+        title="左"
+        @click="change(3)"
+        id="zuo"
+        class="myImg"
+      />
+      <img
+        src="../images/fangxiang/you.png"
+        title="右"
+        @click="change(4)"
+        id="you"
+        class="myImg"
+      />
     </div>
-      <a-button id='btn' @click='auto'>
-        自动巡逻
-      </a-button>
+    <a-button id="btn" @click="auto"> 自动巡逻 </a-button>
   </div>
 </template>
 
 <script>
-export default {
-name:'Dashboard',
-data(){
-  return {
-    charts1: null,
-    option1: null,
-    charts2: null,
-    option2: null,
-    charts3: null,
-    option3: null,
-    timer : null,
-    msg: 'Z',
-    $ws:null,
-  }
-},
 
-created(){
-  this.initws()
-},
-mounted(){
-  document.onkeydown = (e)=>{
-      const code = e.key
-      switch(code){
-        case 'w' : this.msg='A'; break;
-        case 's' : this.msg='E'; break;
-        case 'a' : this.msg='H'; break;
-        case 'd' : this.msg='B'; break;
-        default :  this.msg='Z';
+export default {
+  name: "Dashboard",
+  data() {
+    return {
+      charts1: null,
+      option1: null,
+      charts2: null,
+      option2: null,
+      charts3: null,
+      option3: null,
+      timer: null,
+      msg: "Z",
+      $ws: null,
+      timeid: null
+    };
+  },
+
+  created() {
+    this.initws();
+  },
+  mounted() {
+    document.onkeydown = (e) => {
+      const code = e.key;
+      switch (code) {
+        case "w":
+          this.msg = "A";
+          break;
+        case "s":
+          this.msg = "E";
+          break;
+        case "a":
+          this.msg = "H";
+          break;
+        case "d":
+          this.msg = "B";
+          break;
+        default:
+          this.msg = "Z";
       }
-     if(this.$ws) {
-        console.log('我要发送',this.msg)
-        this.$ws.emit('Control', this.msg)
+      if (this.$ws) {
+        console.log("我要发送", this.msg);
+        this.$ws.emit("Control", this.msg);
       }
-  }
-  this.initCharts()
-},
-methods:{
-  auto(){
-    if(!this.$ws) {
-      return this.$message.info("请等待socket连接")
+    };
+    this.initCharts();
+  /**
+   * @TODO优化
+   */
+    window.onresize = () => {
+      this.$router.go(0)
     }
-    this.$ws.emit('auto')
-    this.$message.success('正在发送自动巡逻命令')
+
   },
-  initws() {
-    try {
-      this.$ws = io('http://47.106.21.200:3000')
-    } catch (error) {
-      this.$message.error('socket 链接失败 ')
-    }
-    // console.log(this.$ws)
-    this.$ws.on('connect',()=>{
-        console.log("成功链接服务端啦")
-    })
-    this.$ws.on('disconnect',()=>{
-        console.log("服务断开，尝试重新链接")
-        this.$ws.connect()
-    })
-    this.$ws.on('sensor',e=>{
-      const d = JSON.parse(e)
-      console.log('sensor',d)
-      this.option3.radar.indicator = d.indicator
-      this.option3.series[0].data = d.data
-      this.charts3.setOption(this.option3)
-    })
-  },
-  change(id) {
-    // console.log(id)
-    switch(id){
-        case 1 : this.msg='A'; break;
-        case 2 : this.msg='E'; break;
-        case 3 : this.msg='H'; break;
-        case 4 : this.msg='B'; break;
-        default :  this.msg='Z';
+  methods: {
+    auto() {
+      if (!this.$ws) {
+        return this.$message.info("请等待socket连接");
       }
-     if(this.$ws) {
-        console.log('我要发送',this.msg)
-        this.$ws.emit('Control', this.msg)
+      this.$ws.emit("auto");
+      this.$message.success("正在发送自动巡逻命令");
+    },
+    initws() {
+      try {
+        let io = io ? io : null;
+        this.$ws = io("http://47.106.21.200:3000");
+      } catch (error) {
+        this.$message.error("socket 链接失败 ");
       }
-  },
-  initCharts(){
-    // console.log('dom=',this.$refs.pie)
-    this.charts1 = this.$echarts.init(this.$refs.pie)
-    this.charts3 = this.$echarts.init(this.$refs.rank)
-    this.updateData()
-  },
-  updateData(){
-    this.option1 = {
-    tooltip: {
-        trigger: 'item'
+      // console.log(this.$ws)
+      this.$ws.on("connect", () => {
+        console.log("成功链接服务端啦");
+      });
+      this.$ws.on("disconnect", () => {
+        console.log("服务断开，尝试重新链接");
+        this.$ws.connect();
+      });
+      this.$ws.on("sensor", (e) => {
+        const d = JSON.parse(e);
+        console.log("sensor", d);
+        this.option3.radar.indicator = d.indicator;
+        this.option3.series[0].data = d.data;
+        this.charts3.setOption(this.option3);
+      });
     },
-    legend: {
-        top: '5%',
-        left: 'center'
+    change(id) {
+      // console.log(id)
+      switch (id) {
+        case 1:
+          this.msg = "A";
+          break;
+        case 2:
+          this.msg = "E";
+          break;
+        case 3:
+          this.msg = "H";
+          break;
+        case 4:
+          this.msg = "B";
+          break;
+        default:
+          this.msg = "Z";
+      }
+      if (this.$ws) {
+        console.log("我要发送", this.msg);
+        this.$ws.emit("Control", this.msg);
+      }
     },
-    series: [
-        {
-            name: '小车的数量',
-            type: 'pie',
-            radius: ['40%', '70%'],
+    initCharts() {
+      // console.log('dom=',this.$refs.pie)
+      this.charts1 = this.$echarts.init(this.$refs.pie);
+      this.charts3 = this.$echarts.init(this.$refs.rank);
+      this.updateData();
+    },
+    updateData() {
+      this.option1 = {
+        tooltip: {
+          trigger: "item",
+        },
+        legend: {
+          top: "5%",
+          left: "center",
+        },
+        series: [
+          {
+            name: "小车的数量",
+            type: "pie",
+            radius: ["40%", "70%"],
             avoidLabelOverlap: false,
             itemStyle: {
-                borderRadius: 10,
-                borderColor: '#fff',
-                borderWidth: 2
+              borderRadius: 10,
+              borderColor: "#fff",
+              borderWidth: 2,
             },
             label: {
-                show: false,
-                position: 'center'
+              show: false,
+              position: "center",
             },
             emphasis: {
-                label: {
-                    show: true,
-                    fontSize: '20',
-                    fontWeight: 'bold'
-                }
+              label: {
+                show: true,
+                fontSize: "20",
+                fontWeight: "bold",
+              },
             },
             labelLine: {
-                show: false
+              show: false,
             },
             data: [
-                {value: 1, name: '巡逻中'},
-                {value: 0, name: '充电中'},
-                {value: 0, name: '维修中'},
-                {value: 1, name: '即将投入使用'}
-            ]
-        }
-    ]
+              { value: 1, name: "巡逻中" },
+              { value: 0, name: "充电中" },
+              { value: 0, name: "维修中" },
+              { value: 1, name: "即将投入使用" },
+            ],
+          },
+        ],
+      };
 
-
-    };
-
-    this.option3 = {
-    radar: {
-        // shape: 'circle',
-        indicator: [
-            { name: 'NH2', max: 100},
-            { name: 'N2', max: 100},
-            { name: 'O2', max: 100},
-            { name: 'CO2', max: 100},
-        ]
-    },
-    series: [{
-        type: 'radar',
-        data: [
-            {
+      this.option3 = {
+        radar: {
+          // shape: 'circle',
+          indicator: [
+            { name: "NH2", max: 100 },
+            { name: "N2", max: 100 },
+            { name: "O2", max: 100 },
+            { name: "CO2", max: 100 },
+          ],
+        },
+        series: [
+          {
+            type: "radar",
+            data: [
+              {
                 value: [90, 80, 40, 30],
-            }
-        ]
-    }]
+              },
+            ],
+          },
+        ],
+      };
+      this.paint();
+    },
 
-  }
-    this.paint()
-},
+    paint() {
+      this.charts1.setOption(this.option1);
+      this.charts3.setOption(this.option3);
+    },
+  },
 
-  paint(){
-    this.charts1.setOption(this.option1)
-    this.charts3.setOption(this.option3)
-  }
-},
+  watch: {},
 
-watch: {},
-
-beforeDestroy(){
-}
-}
+  beforeDestroy() {},
+};
 </script>
 
 <style lang='less' scoped>
-.main{
+.main {
   position: relative;
 }
 
 #pieMap {
   height: 30vh;
 }
-#speed , #rank{
+#speed,
+#rank {
   // width: 40%;
   height: 50vh;
 }
-#card{
+#card {
   width: 100%;
   height: 100%;
 }
-#btn{
+#btn {
   position: absolute;
-  top:55vh;
+  top: 55vh;
 }
 
-#fangxiang{
+#fangxiang {
   position: absolute;
   border: 1px solid #ccc;
   width: 200px;
-  height:200px;
+  height: 200px;
   border-radius: 50%;
-  left:-15vw;
-  top:70vh;
-  .myImg{
+  left: -15vw;
+  top: 70vh;
+  .myImg {
     width: 70px;
-    height:70px;
+    height: 70px;
     position: absolute;
-    &:hover{
+    &:hover {
       background-color: #ccc;
     }
   }
-  #shang, #xia{
-      left:50%;
-      margin-left: -35px;
+  #shang,
+  #xia {
+    left: 50%;
+    margin-left: -35px;
   }
-  #zuo, #you{
+  #zuo,
+  #you {
     top: 50%;
     margin-top: -35px;
   }
-  #shang{
-    top:-17px;
+  #shang {
+    top: -17px;
   }
-  #xia{
-    top:145px;
+  #xia {
+    top: 145px;
   }
-  #zuo{
-    left:-17px;
+  #zuo {
+    left: -17px;
   }
-  #you{
-    left:144px;
+  #you {
+    left: 144px;
   }
 }
 
@@ -253,7 +302,6 @@ beforeDestroy(){
 //   #pieMap{
 //     padding-left: 8rem;
 //   }
-  
-// }
 
+// }
 </style>
